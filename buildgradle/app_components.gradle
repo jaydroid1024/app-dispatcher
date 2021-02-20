@@ -1,0 +1,75 @@
+//****************************************
+//********  调试壳公共gradle配置  **********
+//****************************************
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+android {
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdk
+        targetSdkVersion rootProject.ext.targetSdk
+        versionCode rootProject.ext.versionCode
+        versionName rootProject.ext.versionName
+        //Instrumentation Test class
+        testInstrumentationRunner rootProject.ext.androidJUnitRunner
+        applicationId "com.quhuo.boss" //todo
+//        applicationId "com.component.${project.name.toLowerCase().replaceAll("-", "_")}"
+        /* Enabling multidex support.当DEX中的方法数超过最大值65536时,需要使用,否则打包apk会失败*/
+        multiDexEnabled true
+
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi', 'armeabi-v7a' //'x86', 'mips', 'x86_64', 'arm64-v8a'
+        }
+
+        kapt {
+            arguments {
+                arg("AROUTER_MODULE_NAME", project.getName())
+            }
+        }
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            minifyEnabled false
+            shrinkResources false
+            zipAlignEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+
+    //解决主工程和组件的 AndroidManifest 文件合并问题
+    sourceSets {
+        main {
+            manifest.srcFile './AndroidManifest.xml'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation rootProject.ext.kotlinStdlibJdk8
+    implementation rootProject.ext.appcompat
+    implementation rootProject.ext.coreKtx
+    testImplementation rootProject.ext.junit
+    androidTestImplementation rootProject.ext.junitX
+    androidTestImplementation rootProject.ext.espressoCore
+    implementation rootProject.ext.constraintLayout
+
+
+}

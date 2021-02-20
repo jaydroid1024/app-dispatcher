@@ -1,0 +1,29 @@
+plugins {
+    id 'java-library'
+    id 'groovy'
+}
+// JitPack Maven
+//apply plugin: 'com.github.dcendents.android-maven'
+// Your Group
+//group='com.github.jaydroid1024'
+
+group "com.jay.${project.name}"
+// 版本号 todo 每个组件都需要替换为自己的版本
+version "1.0.1"
+//com.jay.dispatcher-plugin:dispatcher-plugin:1.0.0
+// 引入Maven发布脚本
+apply from: "../../buildgradle/maven_publish.gradle"
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation gradleApi()
+    implementation localGroovy()
+    implementation 'com.android.tools.build:transform-api:1.5.0'
+    implementation 'com.android.tools.build:gradle:3.0.1'
+}
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

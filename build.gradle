@@ -1,0 +1,61 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    //使用 config.gradle 统一管理项目的依赖库,依赖存储库，Gradle 自身依赖（classpath）等
+    apply from: "buildgradle/config.gradle"
+    repositories {
+        google()
+        jcenter()
+
+
+        /**Maven 私服配置*/
+        // 仓库类型 local dev production
+        def currentMavenRepositoryType = rootProject.ext.mavenRepo['currentMavenRepositoryType']
+        def localMavenRepositoryType = rootProject.ext.mavenRepositoryType['local']
+        maven {
+            //区分本地仓库和远程仓库,,本地仓库不需要授权
+            if (currentMavenRepositoryType != localMavenRepositoryType) {
+                credentials {
+                    username rootProject.ext.mavenRepo['userName']
+                    password rootProject.ext.mavenRepo['password']
+                }
+            }
+            url rootProject.ext.mavenRepo['mavenRepoUrlRelease']
+        }
+        maven {
+            //区分本地仓库和远程仓库,本地仓库不需要授权
+            if (currentMavenRepositoryType != localMavenRepositoryType) {
+                credentials {
+                    username rootProject.ext.mavenRepo['userName']
+                    password rootProject.ext.mavenRepo['password']
+                }
+            }
+            url rootProject.ext.mavenRepo['mavenRepoUrlSnapshots']
+        }
+
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:4.1.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+
+        classpath 'com.jay.dispatcher-plugin:dispatcher-plugin:1.0.1'
+
+
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+
+
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

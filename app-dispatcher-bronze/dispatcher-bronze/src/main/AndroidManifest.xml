@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.qlife.lib_app">
+
+    <application>
+
+        <!--appLife ,name需要是全类名,value为固定值用于筛选 -->
+<!--        <meta-data-->
+<!--            android:name="com.qlife.lib_app.app.BaseLibApp"-->
+<!--            android:value="IModuleConfig" />-->
+    </application>
+</manifest>

@@ -1,0 +1,9 @@
+apply from: "../../buildgradle/lib_common.gradle"
+//apply from: "../../buildgradle/maven_publish.gradle"
+apply plugin: 'com.github.dcendents.android-maven'
+group = rootProject.ext.groupForGitHub
+
+dependencies {
+
+}
+

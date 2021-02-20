@@ -1,0 +1,543 @@
+import groovy.json.JsonOutput
+
+ext {
+
+    /** ========================================================= */
+    /** ========================= 环境信息 ======================= */
+    /** ========================================================= */
+    //环境类型统一定义在这里
+    propertyType = [
+            local = "local",
+            dev = "dev",
+            production = "production"
+    ]
+    //todo 指定打包时的环境类型 local dev qa demo production
+    def currentPropertyType = dev
+
+
+    /** ========================================================= */
+    /** ========================= 组件配置 ======================= */
+    /** ========================================================= */
+    //公共的gradle脚本路径统一定义在这里
+    commonGradlePath = [
+            //maven_publish.gradle 组件发布脚本路径，统一配置日后可以放到线上
+            mavenPublishGradlePath = "../../buildgradle/maven_publish.gradle",
+            //lib_common.gradle lib组件公共gradle配置脚本路径，，统一配置日后可以放到线上
+            libCommonGradlePath = "../../buildgradle/lib_common.gradle",
+            //biz_components.gradle biz组件公共gradle配置脚本路径，，统一配置日后可以放到线上
+            bizCommonGradlePath = "../../buildgradle/biz_components.gradle"
+    ]
+    //公共的包名前缀统一定义在这里,
+    groupCommonPrefix = [
+            // 公共的包名前缀统一定义在这里, 组件索引前缀，添加android标记以区别其它项目
+            com_qlife_android = "com.jay.android",
+            groupForGitHub = "com.github.jaydroid1024"
+    ]
+
+    /** ========================================================= */
+    /** ===================== 组件Maven仓库信息 =================== */
+    /** ========================================================= */
+    //Maven 仓库环境类型统一定义在这里
+    mavenRepositoryType = [
+            // 开发人员本地的仓库
+            local     : "local",
+            // 开发人员本地搭建的仓库
+            dev       : "dev",
+            // 远程服务上的仓库
+            production: "production"
+    ]
+    //todo 仓库类型：指定组件Maven仓库远程仓库服务地址
+    // local 开发人员本地的仓库
+    // dev 目前是自己电脑本地
+    // production 公司服务器上（默认）
+    // Note: 每次切换仓库需要clean
+    def currentMavenRepositoryType = mavenRepositoryType['local']
+
+    //todo 发布类型：组件Maven仓库 release 和 snapshot 的控制开关
+    // 这个变量全局控制依赖的地址和上传Maven的Url
+    // true: xxx.xxx.1.0.0
+    // false: xxx.xxx.1.0.0-SNAPSHOT
+    def isUploadToRelease = false
+
+
+    //todo 依赖类型：依赖Maven组件类型的控制开关
+    // false: 依赖本地module运行
+    // true: 依赖远程aar运行
+    def dependenceTypeIsModule = false
+
+    // 根据发布类型控制发布和依赖的版本
+    def versionSuffix = isUploadToRelease ? "" : "-SNAPSHOT"
+
+
+    /** ========================================================= */
+    /** ========================= 版本信息 ======================= */
+    /** ========================================================= */
+
+    android = [
+            compileSdkVersion = 29,
+            buildToolsVersion = '29.0.3',
+            minSdk = 19,
+            targetSdk = 29,
+            versionCode = 138,
+            versionName = "9.13.7"
+    ]
+
+    java = [
+            javaSourceCompatibility = JavaVersion.VERSION_1_8,
+            javaTargetCompatibility = JavaVersion.VERSION_1_8
+    ]
+
+    kotlin = [
+            kotlinVersion = '1.3.72',
+            kotlinOptionsJvmTarget = '1.8'
+    ]
+
+
+    //三方依赖库多个依赖路径引入同一个版本号时需要提取版本号
+    versionArray = [
+
+            stethoVersion = '1.5.1',
+            retrofitVersion = '2.6.0',
+            okhttpVersion = '4.2.2',
+            glideVersion = '4.11.0',
+            chuckVersion = '1.1.0',
+            chuckerVersion = '3.2.0',
+            butterknifeVersion = '10.2.1',
+            immersionbarVersion = '3.0.0',
+            smartRefreshHeaderVersion = '1.0.5.1',
+            leakcanaryVersion = '1.1.2',
+            tinkerVersion = '1.9.14.6',
+            permissionsdispatcherVersion = '4.8.0',
+            aliPushVersion = '3.2.1'
+    ]
+
+
+    /** ========================================================= */
+    /** ========================= 依赖库信息 ======================= */
+    /** ========================================================= */
+
+    //引入三方依赖库时考虑该库到稳定性，可维护性，需要标明引入到github地址并归类放置
+    dependencies = [
+
+            /** ========================================================= */
+            /** =================== android/androidX ==================== */
+            /** ========================================================= */
+            //androidx迁移比对表：https://developer.android.google.cn/jetpack/androidx/migrate?hl=zh_cn#migrate
+            //support-v4
+            supportV4 = 'androidx.legacy:legacy-support-v4:1.0.0',
+            //appcompat-v7
+            appcompat = 'androidx.appcompat:appcompat:1.0.0',
+            //core-Ktx
+            coreKtx = 'androidx.core:core-ktx:1.3.0',
+            //junit
+            junit = 'junit:junit:4.12',
+            //androidx-junit
+            junitX = 'androidx.test.ext:junit:1.1.1',
+            //androidx-espresso-core
+            espressoCore = 'androidx.test.espresso:espresso-core:3.2.0',
+            //AndroidJUnitRunner
+            androidJUnitRunner = "android.support.test.runner.AndroidJUnitRunner",
+            //design
+            design = 'com.google.android.material:material:1.0.0-rc01',
+            //constraintlayout
+            constraintLayout = 'androidx.constraintlayout:constraintlayout:1.1.3',
+            //recyclerview-v7
+            recyclerviewV7 = 'androidx.recyclerview:recyclerview:1.0.0',
+            //multidex
+            multidex = 'androidx.multidex:multidex:2.0.0',
+
+            /** ========================================================= */
+            /** ========================= kotlin ======================== */
+            /** ========================================================= */
+            //kotlin-stdlib-jdk7
+            //kotlinStdlibJdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion",
+            //kotlin-stdlib-jdk8
+            kotlinStdlibJdk8 = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion",
+            //anko-sqlite
+            ankoSqlite = "org.jetbrains.anko:anko-sqlite:0.10.5",
+            //kotlin-reflect
+            kotlinReflect = "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
+
+            /** ========================================================= */
+            /** ========================== tools ======================== */
+            /** ========================================================= */
+            //stetho 调试工具 https://github.com/facebook/stetho
+            stetho = "com.facebook.stetho:stetho:$stethoVersion",
+            //stetho 网络调试 https://github.com/facebook/stetho
+            stethoOkhttp3 = "com.facebook.stetho:stetho-okhttp3:$stethoVersion",
+            //stetho 网络调试 https://github.com/facebook/stetho
+            stethoUrlconnection = "com.facebook.stetho:stetho-urlconnection:$stethoVersion",
+
+            //Chuck Okhttp日志打印工具 https://github.com/jgilfelt/chuck
+            chuckDebug = "com.readystatesoftware.chuck:library:$chuckVersion",
+            //Chuck Okhttp日志打印工具 https://github.com/jgilfelt/chuck
+            chuckRelease = "com.readystatesoftware.chuck:library-no-op:$chuckVersion",
+            //Chucker Okhttp日志和Android异常信息打印工具 https://github.com/ChuckerTeam/chucker
+            ChuckerDebug = "com.github.ChuckerTeam.Chucker:library:$chuckerVersion",
+            //Chucker Okhttp日志和Android异常信息打印工具 https://github.com/ChuckerTeam/chucker
+            ChuckerRelease = "com.github.ChuckerTeam.Chucker:library-no-op:$chuckerVersion",
+
+            //logger https://github.com/orhanobut/logger
+            logger = "com.orhanobut:logger:2.2.0",
+
+            //arouter api https://github.com/alibaba/ARouter
+            arouterApi = "com.alibaba:arouter-api:1.5.0",
+            //arouter compiler https://github.com/alibaba/ARouter
+            arouterCompiler = "com.alibaba:arouter-compiler:1.2.2",
+
+            //butterknife https://github.com/JakeWharton/butterknife
+            butterknife = "com.jakewharton:butterknife:$butterknifeVersion",
+            //butterknifeCompiler https://github.com/JakeWharton/butterknife
+            butterknifeCompiler = "com.jakewharton:butterknife-compiler:$butterknifeVersion",
+
+            //eventbus https://github.com/greenrobot/EventBus
+            eventbus = 'org.greenrobot:eventbus:3.2.0',
+            //greendao https://github.com/greenrobot/greenDAO
+            greendao = 'org.greenrobot:greendao:3.2.2',
+
+            //gson https://github.com/google/gson
+            gson = "com.google.code.gson:gson:2.8.5",
+            // matisse https://github.com/zhihu/Matisse
+            matisse = "com.zhihu.android:matisse:0.5.3-beta3",
+            //firebase  https://firebase.google.com/support/release-notes/android?hl=zh-cn
+            firebaseCore = 'com.google.firebase:firebase-core:17.4.3',
+            firebaseAnaly = 'com.google.firebase:firebase-analytics:17.4.3',
+            firebaseCrashlytics = 'com.google.firebase:firebase-crashlytics:17.1.0',
+            firebaseCrashlyticsNdk = 'com.google.firebase:firebase-crashlytics-ndk:17.1.0',
+            //easypermissions
+            easypermissions = "pub.devrel:easypermissions:1.1.1",
+            //leakcanary
+            leakcanaryDebug = "com.squareup.leakcanary:leakcanary-android:$leakcanaryVersion",
+            leakcanaryRelease = "com.squareup.leakcanary:leakcanary-android-no-op:$leakcanaryVersion",
+
+            //图片压缩工具
+            luban = "top.zibin:Luban:1.1.8",
+
+            //zxing
+            zxing = 'com.google.zxing:core:3.3.3',
+            //barcode scanner
+            zxingBarcodeScanner = 'me.dm7.barcodescanner:zxing:1.9.13',
+            zbarBarcodeScanner = 'me.dm7.barcodescanner:zbar:1.9.8',
+
+            //rxandroidble
+            rxandroidble = 'com.polidea.rxandroidble:rxandroidble:1.3.3',
+            //键盘弹起监听工具
+            keyboardListener = "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:2.3.0",
+
+            fastJson = 'com.alibaba:fastjson:1.2.61',
+
+            // pdfviewpager  https://github.com/voghDev/PdfViewPager
+            pdfviewpager = 'es.voghdev.pdfviewpager:library:1.1.2',
+
+            //配合插件使用自动生产相关代码 https://github.com/permissions-dispatcher/PermissionsDispatcher
+            //基于注解+AOP运行时权限工具   https://github.com/permissions-dispatcher/PermissionsDispatcher
+            permissionsdispatcher = "org.permissionsdispatcher:permissionsdispatcher:${permissionsdispatcherVersion}",
+            permissionsdispatcherProcessor = "org.permissionsdispatcher:permissionsdispatcher-processor:${permissionsdispatcherVersion}",
+
+            /** ========================================================= */
+            /** ========================= network ======================= */
+            /** ========================================================= */
+            //retrofit https://github.com/square/retrofit
+            retrofit = "com.squareup.retrofit2:retrofit:$retrofitVersion",
+            //retrofit converter-gson https://github.com/square/retrofit/blob/master/retrofit-converters/gson/README.md
+            retrofitConverterGson = "com.squareup.retrofit2:converter-gson:$retrofitVersion",
+            //retrofit adapter-rxjava https://github.com/square/retrofit/tree/master/retrofit-adapters/rxjava2
+            retrofitAdapterRxjava = "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion",
+            // Retrofit 同时支持多个 BaseUrl 以及动态改变 BaseUrl(已知问题：不同url 的https证书问题) https://github.com/JessYanCoding/RetrofitUrlManager
+            retrofitUrlManager = "me.jessyan:retrofit-url-manager:1.4.0",
+
+            //okhttp https://github.com/square/okhttp
+            okhttp = "com.squareup.okhttp3:okhttp:$okhttpVersion",
+            //okhttp logging-interceptor https://github.com/square/okhttp/blob/master/okhttp-logging-interceptor/README.md
+            okhttpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:$okhttpVersion",
+            // PersistentCookieJar https://github.com/franmontiel/PersistentCookieJar
+            persistentcookiejar = "com.github.franmontiel:PersistentCookieJar:v1.0.1",
+
+            //rxjava https://github.com/ReactiveX/RxJava  todo rxjava:3.x.x
+            rxjava = 'io.reactivex.rxjava2:rxjava:2.2.10',
+            //rxandroid https://github.com/ReactiveX/RxAndroid todo rxandroid:3.x.x
+            rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1',
+
+            //glide 图片加载 https://github.com/bumptech/glide
+            glide = "com.github.bumptech.glide:glide:$glideVersion",
+            //glide图片加载注解 https://github.com/bumptech/glide
+            glideAnnotationProcessor = "com.github.bumptech.glide:compiler:$glideVersion",
+            //Glide图片变换库
+            glideTransformations = 'jp.wasabeef:glide-transformations:4.0.1',
+
+            //aspectjrt
+            aspectjrt = 'org.aspectj:aspectjrt:1.9.6',
+
+            tinypinyin = 'com.github.promeg:tinypinyin:1.0.0',
+
+            /** ========================================================= */
+            /** ========================== UI相关 ======================== */
+            /** ========================================================= */
+            // statusbarUtil https://github.com/laobie/StatusBarUtil
+            statusbarUtil = "com.jaeger.statusbarutil:library:1.5.1",
+
+            // 基础依赖包，必须要依赖 https://github.com/gyf-dev/ImmersionBar
+            immersionbar = "com.gyf.immersionbar:immersionbar:$immersionbarVersion",
+            // fragment快速实现（可选） https://github.com/gyf-dev/ImmersionBar
+            immersionbarComponents = "com.gyf.immersionbar:immersionbar-components:$immersionbarVersion",
+            // kotlin扩展（可选） https://github.com/gyf-dev/ImmersionBar
+            immersionbarKtx = "com.gyf.immersionbar:immersionbar-ktx:$immersionbarVersion",
+            // SmartRefreshLayout 1.0.5及以前版本的老用户升级需谨慎，API改动过大 https://github.com/scwang90/SmartRefreshLayout
+            smartRefreshLayout = "com.scwang.smartrefresh:SmartRefreshLayout:$smartRefreshHeaderVersion",
+            // SmartRefreshHeader  没有使用特殊Header，可以不加这行 https://github.com/scwang90/SmartRefreshLayout
+            smartRefreshHeader = "com.scwang.smartrefresh:SmartRefreshHeader:$smartRefreshHeaderVersion",
+            //WheelPicker
+            wheelPicker = 'cn.aigestudio.wheelpicker:WheelPicker:1.1.2',
+            //流式布局
+            flowLayout = 'com.zhy:flowlayout-lib:1.0.3',
+            //倒计时
+            countdownView = 'com.github.iwgang:countdownview:2.1.6',
+            //signature-pad 签字板
+            signaturePad = 'com.github.gcacace:signature-pad:1.2.1',
+            //日期滚轮对话框
+            datePicker = 'com.github.gzu-liyujiang.AndroidPicker:WheelPicker:1.5.6.20181018',
+            //日期滚轮
+            pickerView = 'com.contrarywind:Android-PickerView:4.1.8',
+            //popup window
+            basePopupWindow = 'com.github.razerdp:BasePopup:2.2.0',
+            //图片缩放控件
+            photoView = 'com.github.chrisbanes:PhotoView:1.2.5',
+            //switchButton
+            switchButton = 'com.github.zcweng:switch-button:0.0.3@aar',
+            //GSYVideoPlayer
+            gsyVideoPlayer = 'com.shuyu:GSYVideoPlayer:7.1.2',
+            //ExoPlayer
+            exoplayer = 'com.google.android.exoplayer:exoplayer:2.11.1',
+
+            /** ========================================================= */
+            /** ======================= 三方服务/SDK ===================== */
+            /** ========================================================= */
+            //友盟基础组件（必须）
+            umCommon = 'com.umeng.umsdk:common:9.1.1',
+            umAsms = 'com.umeng.umsdk:asms:1.1.3',
+            umCrash = 'com.umeng.umsdk:crash:0.0.4',
+            umsdkUtdid = "com.umeng.umsdk:utdid:1.5.2",
+            //分享核心库
+            umShareCore = 'com.umeng.umsdk:share-core:7.0.3',
+            umShareBoard = 'com.umeng.umsdk:share-board:7.0.3',
+            umShareWX = 'com.umeng.umsdk:share-wx:7.0.3',
+
+            //七牛云
+            qiniu = 'com.qiniu:qiniu-android-sdk:7.5.0',
+
+            //智齿客服
+            sobot = 'com.sobot.chat:sobotsdk:2.3.2',
+
+            //微信不包含统计功能 （com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+包含统计功能）
+            wechat = 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+',
+
+            //mqtt client
+            mqttClient = 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.0',
+            //mqtt service
+            mqttService = 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1',
+
+            //tinker热修复：tinker的核心库
+            tinkerLib = "com.tencent.tinker:tinker-android-lib:$tinkerVersion",
+            tinkerLoader = "com.tencent.tinker:tinker-android-loader:$tinkerVersion",
+            //tinker热修复：可选，用于生成application类
+            tinkerAnno = "com.tencent.tinker:tinker-android-anno:$tinkerVersion",
+
+            //deeplink
+            linkedme = 'cc.linkedme.deeplinks:link-page:1.1.6',
+
+            // 信鸽基础包，不包含厂商通道
+            xinGe = 'com.tencent.xinge:xinge:4.3.5-release',
+            // jp包
+            tencentJP = 'com.tencent.jg:jg:1.1',
+            // wup包
+            tencentWUP = 'com.tencent.wup:wup:1.0.0.E-Release',
+            // mid包，minSdkVersion 14
+            tencentMID = 'com.tencent.mid:mid:4.0.7-Release',
+            // 小米Push
+            tencentXiaoMi = 'com.tencent.xinge:mipush:4.3.2-xiaomi-release',
+            // 华为Push
+            tencentHuaWei = 'com.tencent.xinge:xghw:4.3.2-huawei-release',
+
+            //firebase
+            firebaseCore = 'com.google.firebase:firebase-core:17.2.1',
+            firebaseAnaly = 'com.google.firebase:firebase-analytics:17.2.1',
+            firebaseCrashlytics = 'com.google.firebase:firebase-crashlytics:17.0.0-beta01',
+
+            //frabic crash
+            crashlyticsNdk = 'com.crashlytics.sdk.android:crashlytics-ndk:2.1.0',
+            answers = 'com.crashlytics.sdk.android:answers:1.4.7',
+            //腾讯文件浏览服务
+            tbssdk = 'com.tencent.tbs.tbssdk:sdk:43967',
+            //阿里云推送服务
+            //接入文档：https://help.aliyun.com/document_detail/51056.html?spm=a2c4g.11186623.6.568.54e969a0jwQiMh#%E4%B8%80%E3%80%81Maven%E5%BA%93%E5%BF%AB%E9%80%9F%E9%9B%86%E6%88%90(%E8%BF%9C%E7%A8%8B%E5%90%8C%E6%AD%A5)
+            //注：com.aliyun.ams:alicloud-android-push:3.2.1版本与com.aliyun.ams:alicloud-android-third-push:3.2.0版本匹配使用，两者需要同时升级
+            alicloudAndroidPush = "com.aliyun.ams:alicloud-android-push:3.2.2",
+            alicloudAndroidThirdPush = "com.aliyun.ams:alicloud-android-third-push:3.2.2@aar",
+            //Huawei依赖 同时在AndroidManifest文件中添加 appid
+            alicloudHuaweiPush = 'com.aliyun.ams:huawei-push:2.6.3.305',
+            alicloudHuaweiPushBase = 'com.aliyun.ams:huawei-push-base:2.6.3.305',
+            //小米依赖
+            alicloudMipush = 'com.xiaomi.mipush.sdk:mipush:3.7.9',
+            //OPPO依赖
+            alicloudOpush = 'com.aliyun.ams:opush:2.1.0-fix@aar',
+            //魅族依赖
+            alicloudMeizuPush = 'com.aliyun.ams:meizu-push:3.8.7.1',
+            //VIVO依赖 同时在AndroidManifest文件中添加 appKey,appID
+            alicloudThirdVivoPush = 'com.aliyun.ams:third_vivopush:2.9.0.1',
+            //谷歌依赖
+            alicloudFirebaseMessaging = 'com.google.firebase:firebase-messaging:17.6.0',
+
+
+    ]
+
+
+    /** ========================================================= */
+    /** ===================== 组件Maven仓库信息 =================== */
+    /** ========================================================= */
+
+    println("\n/* ========================组件Maven仓库信息======================= */")
+    //组件Maven仓库信息
+    println("currentMavenRepositoryType:${currentMavenRepositoryType.toString()}")
+    println("dependenceTypeIsModule:${dependenceTypeIsModule.toString()}")
+    println("isUploadToRelease:${isUploadToRelease.toString()}")
+    //根据指定的仓库类型获取对应仓库地址
+    def mavenProps = getMavenProperties(currentMavenRepositoryType)
+    println("mavenProps" + mavenProps.toString())
+    mavenRepo = [
+            //依赖Maven组件类型的控制开关
+            dependenceTypeIsModule    : dependenceTypeIsModule,
+            //组件上传和下载release 和 snapshot 的控制开关
+            isUploadToRelease         : isUploadToRelease,
+            //指定组件Maven仓库远程仓库服务地址
+            currentMavenRepositoryType: currentMavenRepositoryType,
+            //remote-release
+            mavenRepoUrlRelease       : mavenProps["mavenRepoUrlRelease"],
+            //remote-snapshot
+            mavenRepoUrlSnapshots     : mavenProps["mavenRepoUrlSnapshots"],
+            //userName
+            userName                  : mavenProps["userName"],
+            //password
+            password                  : mavenProps["password"]
+    ]
+
+}
+
+/**
+ * 拼接组件的依赖地址
+ * @param componentName 组件名字
+ * @param componentVersion 组件版本
+ * @return 组件的依赖地址
+ */
+String getComponentDependenciesPath(String componentName, String componentVersion) {
+    // 公共的包名前缀统一定义在这里, 组件索引前缀，添加android标记以区别其它项目
+    def groupPrefix = ext.com_qlife_android
+    assert groupPrefix
+    // 拼接后的组件的依赖地址 dependencies_path: GROUP:ARTIFACT_ID:VERSION"
+    def dependenciesPath = "${groupPrefix}.${componentName}:${componentName}:${componentVersion}"
+    println("getComponentDependenciesPath: $dependenciesPath")
+    return dependenciesPath
+}
+
+
+/**
+ * 获取属性总配置文件 buildsystem/config.properties
+ * @return Properties实例 config
+ */
+Properties getConfigProperties() {
+    def CONFIG_PATH = "./buildsystem/config.properties"
+    return getProperties(CONFIG_PATH)
+}
+
+/**
+ * 获取属性配置文件公共方法
+ * @param propPath Properties配置文件路径
+ * @return Properties实例
+ */
+Properties getProperties(String propPath) {
+    Properties props = new Properties()
+    try {
+        InputStream inputStream = new FileInputStream(file(propPath))
+        //解决中文乱码问题
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))
+        props.load(bufferedReader)
+    } catch (IOException e) {
+        e.printStackTrace()
+    }
+    return props
+}
+
+/**
+ * 获取签名配置文件
+ * @return Properties实例  签名
+ */
+Properties getKeyProperties() {
+    Properties configProperties = getConfigProperties()
+    // 使用assert确保存在该属性否则报错，避免错误打包
+    assert configProperties['keystore.props.file']
+    return getProperties(configProperties.getProperty("keystore.props.file"))
+}
+
+/**
+ * 获取Maven仓库配置文件
+ * @return Properties实例  Maven
+ */
+Properties getMavenProperties() {
+    Properties configProperties = getConfigProperties()
+    // 使用assert确保存在该属性否则报错，避免错误打包
+//    assert configProperties['maven.props.file']
+    return getProperties(configProperties.getProperty("maven.props.file"))
+}
+
+/**
+ * 获取当前指定的环境类型，缺省dev
+ * @return
+ */
+String getEnvironmentPropertyType() {
+    Properties localProperties = getConfigProperties()
+    return localProperties.getProperty("propertyType", "dev")
+}
+
+
+/**
+ * 根据环境类型获取环境配置文件
+ * @param propertyType 环境类型
+ * @return 该类型的所有属性信息
+ */
+Properties getEnvironmentProperties(String propertyType) {
+    Properties localProperties = getConfigProperties()
+    String environmentPath = "${propertyType}.props.file"
+    // 使用assert确保存在该属性否则报错，避免错误打包
+    assert localProperties[environmentPath]
+    return getProperties(localProperties.getProperty(environmentPath))
+
+}
+
+/**
+ * 根据环境类型获取环境配置文件
+ * @param propertyType 环境类型
+ * @return 该类型的所有属性信息
+ */
+Properties getMavenProperties(String propertyType) {
+    Properties localProperties = getConfigProperties()
+    String environmentPath = "${propertyType}.maven.props.file"
+    // 使用assert确保存在该属性否则报错，避免错误打包
+    assert localProperties[environmentPath]
+    return getProperties(localProperties.getProperty(environmentPath))
+
+}
+
+/**
+ * 将集合转为json 字符串
+ * @param allEnvironmentList
+ * @return
+ */
+static String getAllEnvironmentJson(Object allEnvironmentList) {
+    // 使用assert确保存在该属性否则报错，避免错误打包
+    assert allEnvironmentList
+    def jsonList = new JsonOutput().toJson(allEnvironmentList)
+    return jsonList.replaceAll("\"", "\\\\\"")
+}
+
+
+
+

@@ -1,0 +1,12 @@
+rootProject.name = "app-dispatcher"
+
+include ':app'
+
+include ':app-dispatcher-bronze:dispatcher-bronze'
+
+include ':app-dispatcher-diamond:dispatcher-annotation',
+        ':app-dispatcher-diamond:dispatcher-api',
+        ':app-dispatcher-diamond:dispatcher-apt',
+        ':app-dispatcher-diamond:dispatcher-plugin'
+
+
