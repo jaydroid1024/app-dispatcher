@@ -1,8 +1,10 @@
 rootProject.name = "app-dispatcher"
 
-include ':app:demo-dispatcher-bronze'
+include ':app:demo-dispatcher-bronze',
+        ':app:demo-dispatcher-diamond'
 
 include ':app-dispatcher-bronze:dispatcher-bronze'
+
 
 include ':app-dispatcher-diamond:dispatcher-annotation',
         ':app-dispatcher-diamond:dispatcher-api',

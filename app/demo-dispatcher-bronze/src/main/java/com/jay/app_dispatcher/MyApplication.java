@@ -4,7 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
-import com.qlife.lib_app.appdelegate.AppLifeDispatcher;
+import com.jay.dispatcher_bronze.AppLifeDispatcher;
+
 
 public class MyApplication extends Application {
 
@@ -17,7 +18,6 @@ public class MyApplication extends Application {
         super.attachBaseContext(base);
         applicationDelegate = new AppLifeDispatcher(this);
         applicationDelegate.attachBaseContext(base);
-
     }
 
 
