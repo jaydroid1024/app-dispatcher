@@ -47,8 +47,14 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
 
-    implementation project(':app-dispatcher-diamond:dispatcher-annotation')
-    implementation project(':app-dispatcher-diamond:dispatcher-api')
-    annotationProcessor project(':app-dispatcher-diamond:dispatcher-apt')
+//    implementation project(':app-dispatcher-diamond:dispatcher-annotation')
+//    implementation project(':app-dispatcher-diamond:dispatcher-api')
+//    annotationProcessor project(':app-dispatcher-diamond:dispatcher-apt')
+
+
+    annotationProcessor "com.github.jaydroid1024.app-dispatcher:dispatcher-apt:$appDispatcherVersion"
+    implementation "com.github.jaydroid1024.app-dispatcher:dispatcher-api:$appDispatcherVersion"
+    implementation "com.github.jaydroid1024.app-dispatcher:dispatcher-annotation:$appDispatcherVersion"
+
 
 }

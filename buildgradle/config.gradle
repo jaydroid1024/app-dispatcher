@@ -108,7 +108,8 @@ ext {
             leakcanaryVersion = '1.1.2',
             tinkerVersion = '1.9.14.6',
             permissionsdispatcherVersion = '4.8.0',
-            aliPushVersion = '3.2.1'
+            aliPushVersion = '3.2.1',
+            appDispatcherVersion = '1.0.6'
     ]
 
 

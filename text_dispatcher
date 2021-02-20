@@ -2,6 +2,13 @@
 
 https://jitpack.io/#jaydroid1024/app-dispatcher
 
+com.github.jaydroid1024.app-dispatcher:dispatcher-bronze:1.0.6
+com.github.jaydroid1024.app-dispatcher:dispatcher-plugin:1.0.6
+com.github.jaydroid1024.app-dispatcher:dispatcher-apt:1.0.6
+com.github.jaydroid1024.app-dispatcher:dispatcher-api:1.0.6
+com.github.jaydroid1024.app-dispatcher:dispatcher-annotation:1.0.6
+
+
 Bronze
 倔强青铜
 
