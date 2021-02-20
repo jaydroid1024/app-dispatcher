@@ -1,4 +1,4 @@
-package com.qlife.lib_app.appdelegate
+package com.jay.dispatcher_bronze
 
 import android.app.ActivityManager
 import android.app.Application

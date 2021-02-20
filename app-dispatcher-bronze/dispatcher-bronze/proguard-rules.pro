@@ -22,5 +22,4 @@
 
 #组件化
 # 保留app声明周期分发类不被混淆
--keep class * implements com.qlife.lib_app.appdelegate.IAppLife
--dontwarn com.qlife.lib_app.**
+-keep class * implements com.jay.dispatcher_bronze.IAppLife

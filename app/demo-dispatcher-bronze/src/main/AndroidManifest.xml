@@ -24,6 +24,11 @@
             android:name="com.jay.app_dispatcher.LibNetApp"
             android:value="IModuleConfig" />
 
+        <!--appLife ,name需要是全类名,value为固定值用于筛选 -->
+        <meta-data
+            android:name="com.jay.app_dispatcher.BizPushApp"
+            android:value="IModuleConfig" />
+
 
     </application>
 

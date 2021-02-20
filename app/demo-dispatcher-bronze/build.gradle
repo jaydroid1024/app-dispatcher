@@ -48,6 +48,6 @@ dependencies {
 
 
 //    implementation project(':app-dispatcher-bronze:dispatcher-bronze')
-    implementation 'com.github.jaydroid1024.app-dispatcher:dispatcher-bronze:1.0.1'
+    implementation 'com.github.jaydroid1024:app-dispatcher:1.0.3'
 
 }

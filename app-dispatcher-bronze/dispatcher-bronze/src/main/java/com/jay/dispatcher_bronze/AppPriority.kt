@@ -1,4 +1,4 @@
-package com.qlife.lib_app.appdelegate
+package com.jay.dispatcher_bronze
 
 /**
  * Application 生命周期分发 优先级
