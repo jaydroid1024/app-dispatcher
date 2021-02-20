@@ -2,6 +2,7 @@ apply plugin: 'maven'
 
 
 
+
 println("--------${project.name}：Maven Publish Gradle--------")
 //release 和 snapshot 的控制开关
 def isUploadToRelease = rootProject.ext.mavenRepo['isUploadToRelease']

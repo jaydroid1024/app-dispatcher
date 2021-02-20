@@ -4,7 +4,7 @@ plugins {
 }
 
 //引入插件applifecycle
-apply plugin: 'com.hm.plugin.lifecycle'
+//apply plugin: 'com.hm.plugin.lifecycle'
 
 android {
     compileSdkVersion 30
@@ -50,4 +50,7 @@ dependencies {
     implementation project(':app-dispatcher-diamond:dispatcher-api')
     annotationProcessor project(':app-dispatcher-diamond:dispatcher-apt')
     implementation project(':app-dispatcher-bronze:dispatcher-bronze')
+
+//    implementation 'com.github.jaydroid1024:app-dispatcher:1.0.0'
+
 }
