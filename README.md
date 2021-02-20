@@ -88,3 +88,9 @@ implementation "com.github.jaydroid1024.app-dispatcher:dispatcher-annotation:$ap
 
 
 
+## Thanks
+
+- [Android-AppLifecycleMgr](https://github.com/houjinyun/Android-AppLifecycleMgr)
+
+- [AppInit](https://github.com/bingoogolapple/AppInit) 
+
