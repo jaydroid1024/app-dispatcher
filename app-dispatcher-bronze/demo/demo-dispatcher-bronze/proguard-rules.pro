@@ -19,3 +19,9 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+#组件化
+# 保留app-dispatcher库
+-keep class com.jay.dispatcher_bronze.**{*;}
+# 保留实现了IAppLife 的所有 appLife类
+-keep class * implements com.jay.dispatcher_bronze.IAppLife

@@ -235,6 +235,10 @@ ext {
             permissionsdispatcher = "org.permissionsdispatcher:permissionsdispatcher:${permissionsdispatcherVersion}",
             permissionsdispatcherProcessor = "org.permissionsdispatcher:permissionsdispatcher-processor:${permissionsdispatcherVersion}",
 
+            //app-dispatcher 是一款 Android 应用生命周期分发框架，基于组件化的设计思路，使用简单。
+            appDispatcherBronze = "com.github.jaydroid1024.app-dispatcher:dispatcher-bronze:$appDispatcherVersion",
+
+
             /** ========================================================= */
             /** ========================= network ======================= */
             /** ========================================================= */

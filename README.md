@@ -1,5 +1,5 @@
 # app-dispatcher
-app-dispatcher 是一款 Android 应用生命周期分发框架，基于组件化的设计思路，使用简单。
+[app-dispatcher](https://github.com/jaydroid1024/app-dispatcher/tree/master) 是一款 Android 应用生命周期分发框架，基于组件化的设计思路，使用简单。
 
 
 
@@ -22,12 +22,22 @@ allprojects {
 
 
 
-Step 2. Add the dependency  to your  app  build.gradle
+Step 2. Add the dependency to your app build.gradle
 
 ```groovy
 dependencies {
    implementation 'com.github.jaydroid1024.app-dispatcher:dispatcher-bronze:$appDispatcherVersion'
 }
+```
+
+Step 3. Add confuse code to yaour root proguard-rules.pro
+
+```groovy
+#组件化
+# 保留app-dispatcher库
+-keep class com.jay.dispatcher_bronze.**{*;}
+# 保留实现了IAppLife 的所有 appLife类
+-keep class * implements com.jay.dispatcher_bronze.IAppLife
 ```
 
 

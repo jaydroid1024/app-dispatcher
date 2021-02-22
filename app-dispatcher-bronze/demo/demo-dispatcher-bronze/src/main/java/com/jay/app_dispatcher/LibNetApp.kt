@@ -2,8 +2,8 @@ package com.jay.app_dispatcher
 
 import android.app.Application
 import android.util.Log
-import com.qlife.lib_app.appdelegate.AppPriority
-import com.qlife.lib_app.appdelegate.IAppLife
+import com.jay.dispatcher_bronze.AppPriority
+import com.jay.dispatcher_bronze.IAppLife
 
 /**
  * LibNetApp,反射调用
